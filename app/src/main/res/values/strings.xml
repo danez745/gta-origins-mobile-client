@@ -20,7 +20,7 @@
     <string name="distribution_update_dialog_message">A newer client version is available. Do you want to download and install it now?</string>
     <string name="distribution_download_dialog_title">Cache download</string>
     <string name="distribution_download_dialog_message">Game cache is missing. Download it now?</string>
-    <string name="distribution_progress_format">%s: %d%%</string>
+    <string name="distribution_progress_format" formatted="false">%s: %d%%</string>
     <string name="downloaderAssetsHeader">Preparing assets:</string>
     <string name="downloaderError">Error</string>
     <string name="downloaderNoData">Game Data was either not installed or was deleted. Please connect to the internet and relaunch so it can download!</string>
