@@ -1,12 +1,25 @@
-# SA-MP 2.11 (Android)
+# GTA Origins Mobile Client
 
-Modern **SA-MP 2.11** client for **Grand Theft Auto: San Andreas (Android)**.
+Forked and actively modifiable **SA-MP / open.mp mobile client** for **Grand Theft Auto: San Andreas (Android)**.
 
 > Main author's:
 [**Egor Kuzn**](https://github.com/bkuzn2) && [**Vadim**](https://github.com/kuzia15)
 
+> Fork/maintenance:
+> **danez745**
 
 > **Status:** Active Development 🚧
+
+## Fork notes
+
+This repository is the working base for **GTA Origins Mobile Client** and will be customized for:
+
+- client-side UI and gameplay changes
+- automatic cache download inside the app
+- client self-update flow from the app
+- future server-specific integrations
+
+The original upstream source is kept for reference, but this fork is expected to diverge over time.
 
 ## Features
 
