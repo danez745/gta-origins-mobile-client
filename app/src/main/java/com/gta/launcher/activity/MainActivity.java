@@ -3,6 +3,7 @@ package com.gta.launcher.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -21,17 +22,30 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.gta.game.R;
 import com.gta.game.SAMP;
+import com.gta.launcher.distribution.DistributionManifest;
+import com.gta.launcher.distribution.DistributionManager;
+
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-    private Handler handler = new Handler(Looper.getMainLooper());
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
     private Button startButton;
-    private TextView title1, title2, authorText, cacheText;
+    private Button downloadCacheButton;
+    private Button updateButton;
+    private TextView title1;
+    private TextView title2;
+    private TextView authorText;
+    private TextView cacheText;
     private boolean storagePermissionGranted = false;
+    private DistributionManager distributionManager;
+    private DistributionManifest distributionManifest;
 
     private final ActivityResultLauncher<String[]> requestStoragePermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), permissions -> {
@@ -85,9 +99,10 @@ public class MainActivity extends AppCompatActivity {
 
             Log.d("MainActivity", "ContentView set");
 
+            distributionManager = new DistributionManager(this);
             initViews();
             setupClickListeners();
-
+            refreshDistributionState();
             checkAndRequestStoragePermission();
 
             Log.d("MainActivity", "onCreate completed successfully");
@@ -95,6 +110,55 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("MainActivity", "Critical error in onCreate: " + e.getMessage(), e);
             finish();
+        }
+    }
+
+    private void refreshDistributionState() {
+        if (distributionManager == null || !distributionManager.hasManifestUrl()) {
+            setCacheStatus(getString(R.string.distribution_not_configured));
+            return;
+        }
+
+        setCacheStatus(getString(R.string.distribution_checking));
+        distributionManager.fetchManifest(new DistributionManager.ManifestCallback() {
+            @Override
+            public void onSuccess(DistributionManifest manifest) {
+                distributionManifest = manifest;
+                renderDistributionState();
+            }
+
+            @Override
+            public void onError(Exception error) {
+                Log.e("MainActivity", "Failed to fetch distribution manifest: " + error.getMessage(), error);
+                setCacheStatus(getString(R.string.distribution_remote_error));
+            }
+        });
+    }
+
+    private void renderDistributionState() {
+        if (distributionManifest == null) {
+            return;
+        }
+
+        String cacheState = distributionManager.describeCacheState(distributionManifest);
+        String currentClient = getCurrentClientVersionLabel();
+        String remoteClient = distributionManifest.getClientVersionName().isEmpty()
+                ? String.format(Locale.US, "Remote client v%d", distributionManifest.getClientVersionCode())
+                : String.format(Locale.US, "Remote client %s (%d)", distributionManifest.getClientVersionName(), distributionManifest.getClientVersionCode());
+
+        setCacheStatus(cacheState + "\n" + currentClient + "\n" + remoteClient);
+    }
+
+    private String getCurrentClientVersionLabel() {
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
+            long versionCode = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+                    ? info.getLongVersionCode()
+                    : info.versionCode;
+            return String.format(Locale.US, "Client v%s (%d)", info.versionName, versionCode);
+        } catch (Exception e) {
+            Log.e("MainActivity", "Unable to read current package version", e);
+            return "Client v?";
         }
     }
 
@@ -154,11 +218,123 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startGameIfReady() {
-        if (storagePermissionGranted) {
-            startGame();
-        } else {
+        if (!storagePermissionGranted) {
             Toast.makeText(this, "Нет доступа к хранилищу. Игра не может быть запущена.", Toast.LENGTH_LONG).show();
+            return;
         }
+
+        if (distributionManifest == null) {
+            startGame();
+            return;
+        }
+
+        if (!distributionManager.isCacheInstalled(distributionManifest)) {
+            promptCacheDownload(true);
+            return;
+        }
+
+        if (distributionManager.isClientUpdateAvailable(distributionManifest)) {
+            promptClientUpdate();
+            return;
+        }
+
+        startGame();
+    }
+
+    private void promptCacheDownload(final boolean autoPlayAfterDownload) {
+        if (distributionManifest == null) {
+            if (distributionManager.hasManifestUrl()) {
+                Toast.makeText(this, getString(R.string.distribution_checking), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, getString(R.string.distribution_not_configured), Toast.LENGTH_LONG).show();
+            }
+            return;
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.distribution_download_dialog_title)
+                .setMessage(R.string.distribution_download_dialog_message)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> downloadCache(autoPlayAfterDownload))
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void promptClientUpdate() {
+        if (distributionManifest == null) {
+            Toast.makeText(this, getString(R.string.distribution_checking), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.distribution_update_dialog_title)
+                .setMessage(R.string.distribution_update_dialog_message)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> downloadClientUpdate())
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void downloadCache(final boolean autoPlayAfterDownload) {
+        if (distributionManifest == null) {
+            Toast.makeText(this, getString(R.string.distribution_remote_error), Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        setCacheStatus(getString(R.string.distribution_cache_missing));
+        distributionManager.downloadAndInstallCache(distributionManifest, new DistributionManager.ProgressCallback() {
+            @Override
+            public void onProgress(int percent, long downloadedBytes, long totalBytes) {
+                setCacheStatus(String.format(Locale.US,
+                        getString(R.string.distribution_progress_format),
+                        "Cache",
+                        percent));
+            }
+        }, new DistributionManager.FileCallback() {
+            @Override
+            public void onSuccess(java.io.File file) {
+                setCacheStatus(getString(R.string.distribution_cache_done));
+                renderDistributionState();
+                if (autoPlayAfterDownload) {
+                    startGame();
+                }
+            }
+
+            @Override
+            public void onError(Exception error) {
+                Log.e("MainActivity", "Cache download failed: " + error.getMessage(), error);
+                setCacheStatus(getString(R.string.distribution_download_error));
+                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void downloadClientUpdate() {
+        if (distributionManifest == null) {
+            Toast.makeText(this, getString(R.string.distribution_remote_error), Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        setCacheStatus(getString(R.string.distribution_client_update_available));
+        distributionManager.downloadAndPromptInstallClient(distributionManifest, this, new DistributionManager.ProgressCallback() {
+            @Override
+            public void onProgress(int percent, long downloadedBytes, long totalBytes) {
+                setCacheStatus(String.format(Locale.US,
+                        getString(R.string.distribution_progress_format),
+                        "Client",
+                        percent));
+            }
+        }, new DistributionManager.FileCallback() {
+            @Override
+            public void onSuccess(java.io.File file) {
+                setCacheStatus(getString(R.string.distribution_client_update_done));
+            }
+
+            @Override
+            public void onError(Exception error) {
+                Log.e("MainActivity", "Client update failed: " + error.getMessage(), error);
+                setCacheStatus(getString(R.string.distribution_download_error));
+                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void setFullScreenMode() {
@@ -218,20 +394,12 @@ public class MainActivity extends AppCompatActivity {
             title1 = findViewById(R.id.title1);
             title2 = findViewById(R.id.title2);
             authorText = findViewById(R.id.authorText);
+            cacheText = findViewById(R.id.cacheText);
             startButton = findViewById(R.id.startButton);
-
+            downloadCacheButton = findViewById(R.id.downloadCacheButton);
+            updateButton = findViewById(R.id.updateButton);
         } catch (Exception e) {
-            Log.e("MainActivity", "Error in initViews: " + e.getMessage());
-        }
-    }
-
-    private void startGame() {
-        try {
-            Log.d("MainActivity", "Starting game");
-            Intent gameIntent = new Intent(MainActivity.this, SAMP.class);
-            startActivity(gameIntent);
-        } catch (Exception e) {
-            Log.e("MainActivity", "Error starting game: " + e.getMessage());
+            Log.e("MainActivity", "Error in initViews: " + e.getMessage(), e);
         }
     }
 
@@ -251,12 +419,56 @@ public class MainActivity extends AppCompatActivity {
                                 .start();
 
                         if (storagePermissionGranted) {
-                            startGame();
+                            startGameIfReady();
                         } else {
                             checkAndRequestStoragePermission();
                         }
                     } catch (Exception e) {
-                        Log.e("MainActivity", "Error in start button click: " + e.getMessage());
+                        Log.e("MainActivity", "Error in start button click: " + e.getMessage(), e);
+                    }
+                }
+            });
+
+            downloadCacheButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        withManifest(new ManifestAction() {
+                            @Override
+                            public void run(DistributionManifest manifest) {
+                                if (manifest == null) {
+                                    Toast.makeText(MainActivity.this, getString(R.string.distribution_remote_error), Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+                                downloadCache(false);
+                            }
+                        });
+                    } catch (Exception e) {
+                        Log.e("MainActivity", "Error in download cache click: " + e.getMessage(), e);
+                    }
+                }
+            });
+
+            updateButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        withManifest(new ManifestAction() {
+                            @Override
+                            public void run(DistributionManifest manifest) {
+                                if (manifest == null) {
+                                    Toast.makeText(MainActivity.this, getString(R.string.distribution_remote_error), Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+                                if (distributionManager.isClientUpdateAvailable(manifest)) {
+                                    promptClientUpdate();
+                                } else {
+                                    Toast.makeText(MainActivity.this, "Client already up to date", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    } catch (Exception e) {
+                        Log.e("MainActivity", "Error in update button click: " + e.getMessage(), e);
                     }
                 }
             });
@@ -269,13 +481,67 @@ public class MainActivity extends AppCompatActivity {
                                 Uri.parse("https://t.me/kuzia15"));
                         startActivity(browserIntent);
                     } catch (Exception e) {
-                        Log.e("MainActivity", "Error opening tg: " + e.getMessage());
+                        Log.e("MainActivity", "Error opening tg: " + e.getMessage(), e);
                     }
                 }
             });
 
         } catch (Exception e) {
-            Log.e("MainActivity", "Error setting up click listeners: " + e.getMessage());
+            Log.e("MainActivity", "Error setting up click listeners: " + e.getMessage(), e);
+        }
+    }
+
+    private interface ManifestAction {
+        void run(DistributionManifest manifest);
+    }
+
+    private void withManifest(final ManifestAction action) {
+        if (distributionManifest != null) {
+            action.run(distributionManifest);
+            return;
+        }
+
+        if (distributionManager == null || !distributionManager.hasManifestUrl()) {
+            action.run(null);
+            return;
+        }
+
+        setCacheStatus(getString(R.string.distribution_checking));
+        distributionManager.fetchManifest(new DistributionManager.ManifestCallback() {
+            @Override
+            public void onSuccess(DistributionManifest manifest) {
+                distributionManifest = manifest;
+                renderDistributionState();
+                action.run(manifest);
+            }
+
+            @Override
+            public void onError(Exception error) {
+                Log.e("MainActivity", "Failed to fetch distribution manifest: " + error.getMessage(), error);
+                setCacheStatus(getString(R.string.distribution_remote_error));
+                action.run(null);
+            }
+        });
+    }
+
+    private void setCacheStatus(final String text) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (cacheText != null) {
+                    cacheText.setText(text);
+                }
+            }
+        });
+    }
+
+    private void startGame() {
+        try {
+            Log.d("MainActivity", "Starting game");
+            Intent gameIntent = new Intent(MainActivity.this, SAMP.class);
+            startActivity(gameIntent);
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error starting game: " + e.getMessage(), e);
         }
     }
 
@@ -289,7 +555,7 @@ public class MainActivity extends AppCompatActivity {
                 inputManager.hideSoftInputFromWindow(currentFocusedView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
             }
         } catch (Exception e) {
-            Log.e("MainActivity", "Error hiding keyboard: " + e.getMessage());
+            Log.e("MainActivity", "Error hiding keyboard: " + e.getMessage(), e);
         }
     }
 
@@ -299,7 +565,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             handler.removeCallbacksAndMessages(null);
         } catch (Exception e) {
-            Log.e("MainActivity", "Error in onDestroy: " + e.getMessage());
+            Log.e("MainActivity", "Error in onDestroy: " + e.getMessage(), e);
         }
     }
 }
