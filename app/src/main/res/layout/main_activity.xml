@@ -56,19 +56,49 @@
         android:shadowRadius="1"/>
 
     <TextView
-        android:id="@+id/bugText"
+        android:id="@+id/cacheText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/bug_info"
+        android:text="Cache status"
         android:textColor="#FFFFFF"
         android:textSize="@dimen/medium_text_size"
-        android:layout_above="@id/authorText"
+        android:layout_above="@id/startButton"
         android:layout_alignStart="@id/authorText"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="12dp"
         android:shadowColor="#000000"
         android:shadowDx="1"
         android:shadowDy="1"
         android:shadowRadius="1"/>
+
+    <Button
+        android:id="@+id/downloadCacheButton"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:text="@string/download_cache_bth"
+        android:textSize="@dimen/button_text_size"
+        android:textStyle="bold"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="@dimen/bottom_margin"
+        android:layout_marginStart="@dimen/horizontal_margin"
+        android:background="@drawable/button_br_red_unfilled"
+        android:textColor="#FFFFFF"
+        android:elevation="8dp"/>
+
+    <Button
+        android:id="@+id/updateButton"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:text="@string/update_client_bth"
+        android:textSize="@dimen/button_text_size"
+        android:textStyle="bold"
+        android:layout_above="@id/startButton"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="@dimen/horizontal_margin"
+        android:background="@drawable/button_br_red_unfilled"
+        android:textColor="#FFFFFF"
+        android:elevation="8dp"/>
 
     <Button
         android:id="@+id/startButton"
