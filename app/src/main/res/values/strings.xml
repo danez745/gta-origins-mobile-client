@@ -1,10 +1,26 @@
 <resources>
-    <string name="app_name">GTA 2.11</string>
+    <string name="app_name">GTA Origins</string>
     <string name="play_bth">START!</string>
-    <string name="samp_ver">SA:MP 0.3.7</string>
-    <string name="client_name">SA:MP 2.11 </string>
+    <string name="download_cache_bth">Download Cache</string>
+    <string name="update_client_bth">Update Client</string>
+    <string name="samp_ver">SA-MP / open.mp mobile client</string>
+    <string name="client_name">GTA Origins Mobile</string>
     <string name="bug_info">Found a bug? Report it, and I\'ll fix it!</string>
     <string name="authors">thanks to bkuzn and afobazl</string>
+    <string name="distribution_not_configured">Remote distribution URL is not configured yet.</string>
+    <string name="distribution_checking">Checking cache and client version…</string>
+    <string name="distribution_cache_ready">Cache is ready.</string>
+    <string name="distribution_cache_missing">Cache is missing. Downloading now…</string>
+    <string name="distribution_cache_done">Cache downloaded successfully.</string>
+    <string name="distribution_client_update_available">Client update available.</string>
+    <string name="distribution_client_update_done">Client update downloaded. Opening installer…</string>
+    <string name="distribution_remote_error">Failed to fetch remote distribution data.</string>
+    <string name="distribution_download_error">Download failed.</string>
+    <string name="distribution_update_dialog_title">Client update available</string>
+    <string name="distribution_update_dialog_message">A newer client version is available. Do you want to download and install it now?</string>
+    <string name="distribution_download_dialog_title">Cache download</string>
+    <string name="distribution_download_dialog_message">Game cache is missing. Download it now?</string>
+    <string name="distribution_progress_format">%s: %d%%</string>
     <string name="downloaderAssetsHeader">Preparing assets:</string>
     <string name="downloaderError">Error</string>
     <string name="downloaderNoData">Game Data was either not installed or was deleted. Please connect to the internet and relaunch so it can download!</string>
@@ -27,4 +43,5 @@
     <string name="asset_pack_sfx1">Audio (part 1)</string>
     <string name="asset_pack_sfx2">Audio (part 2)</string>
     <string name="asset_pack_streams">Audio (part 3)</string>
+    <string name="remote_distribution_manifest_url"></string>
 </resources>
