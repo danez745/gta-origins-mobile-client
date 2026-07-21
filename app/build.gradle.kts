@@ -28,6 +28,8 @@ android {
     packaging {
         jniLibs {
             excludes.add("META-INF/*")
+            pickFirsts.add("lib/arm64-v8a/libbass.so")
+            pickFirsts.add("lib/arm64-v8a/libbass_ssl.so")
         }
         resources {
             excludes.add("META-INF/*")
