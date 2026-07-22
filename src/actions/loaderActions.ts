@@ -48,6 +48,8 @@ export type CacheType = {
   path: string;
   bytes: number[];
   gpu: string;
+  url?: string;
+  snowUrl?: string;
 };
 
 export type LauncherType = {

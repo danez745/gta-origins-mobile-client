@@ -40,7 +40,9 @@ export const compareFileRecursion =
 
     for await (const cache of caches) {
       const { path, bytes, name, gpu: gpuCache } = cache;
-      const bytesValid = bytes.length > 1 ? bytes[modeType] : bytes[0];
+      const bytesValid = Array.isArray(bytes)
+        ? bytes[modeType] ?? bytes[0]
+        : bytes;
 
       const isValidCache = await FileValidate.isValidCache({
         gpuCache,
@@ -104,10 +106,13 @@ export const fetchStartDownload = (): AppThunk => async (dispatch, state) => {
   );
 
   for await (const cache of needDownload) {
-    const { id, path: toFile, name: toName, bytes } = cache;
-    const bytesValid = bytes.length > 1 ? bytes[modeType] : bytes[0];
+    const { id, path: toFile, name: toName, bytes, url, snowUrl } = cache;
+    const bytesValid = Array.isArray(bytes)
+      ? bytes[modeType] ?? bytes[0]
+      : bytes;
     const urlValid =
-      bytes.length > 1 && modeType > 0 ? cdnCache + '_snow' : cdnCache;
+      (modeType > 0 ? snowUrl : url) ??
+      (modeType > 0 ? `${cdnCache}_snow` : cdnCache);
 
     try {
       dispatch(
