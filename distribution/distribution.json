@@ -116,11 +116,11 @@
       "name": "settings.ini",
       "path": "SAMP",
       "bytes": [
-        399,
-        399
+        398,
+        398
       ],
       "gpu": "",
-      "url": "https://drive.usercontent.google.com/download?id=14IHgwgT50YZSqkw5wwP_Pp6FyiP-r6dC&export=download&authuser=0&confirm=t"
+      "url": "https://github.com/danez745/gta-origins-mobile-client/releases/download/cache-drive-b774c0b/settings.ini"
     },
     {
       "id": 12,
@@ -3956,7 +3956,7 @@
   ],
   "projectName": "Touch Mobile",
   "packageName": "com.touch.mobile.dark",
-  "versionHash": "1784687722",
+  "versionHash": "1784690607",
   "rss": "https://touch-rp.com/api/launcer/news",
   "cdnCache": "",
   "cdnLauncher": "https://github.com/danez745/gta-origins-mobile-client/releases/download/cache-drive-b774c0b",
@@ -3968,9 +3968,9 @@
   "launcher": {
     "appVersion": "0.0.16",
     "name": "gta-origins-cache-drive-release.apk",
-    "hash": "6cdfc467e70bc752ca6a99d9e82b4344",
-    "mtime": 1784687722,
-    "bytes": 26735086
+    "hash": "5005b91f448303fa8432718921b259ba",
+    "mtime": 1784690607,
+    "bytes": 26735160
   },
   "servers": [
     {

@@ -17,6 +17,7 @@ ROOT_STANDARD = "1Tk6Uhtf96_z_MwqyvJts7CXNxCr14AT3"
 ROOT_SNOW = "1J7O73eX8xzfMaD8AXMuXS9xodyjWB24G"
 RELEASE_TAG = "cache-drive-b774c0b"
 LAUNCHER_ASSET_NAME = "gta-origins-cache-drive-release.apk"
+SETTINGS_ASSET_NAME = "settings.ini"
 OUTPUT = pathlib.Path("distribution/distribution.json")
 APK_PATH = pathlib.Path("android/app/build/outputs/apk/release/app-release.apk")
 APP_VERSION = "0.0.16"
@@ -155,6 +156,14 @@ def make_cache(standard: dict[str, dict], snow: dict[str, dict]) -> tuple[list[d
             "gpu": gpu_for(name),
             "url": std["url"],
         }
+        if rel_path == "SAMP/settings.ini":
+            item["url"] = (
+                "https://github.com/danez745/gta-origins-mobile-client/"
+                f"releases/download/{RELEASE_TAG}/{SETTINGS_ASSET_NAME}"
+            )
+            settings_path = pathlib.Path("distribution/settings.ini")
+            if settings_path.exists():
+                item["bytes"] = [settings_path.stat().st_size, settings_path.stat().st_size]
         if snow_item:
             item["snowUrl"] = snow_item["url"]
             cache_mode.append(item.copy())
