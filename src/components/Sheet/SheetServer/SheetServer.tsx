@@ -2,10 +2,13 @@ import { BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet';
 import Lottie from 'lottie-react-native';
 import React, { useCallback } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
+import RNFS from 'react-native-fs';
 import { setAlertUserName } from '../../../actions/alertActions';
 import { NetworkSvg, PeopleSvg, PlaySvg } from '../../../assets/svg';
+import { FilePath } from '../../../features/fileManager';
 import { getRndInteger } from '../../../helpers';
 import { verticalScale } from '../../../helpers/demensions';
+import { parseINIString, stringifyIni } from '../../../helpers';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { selectSelectedServer } from '../../../selectors/appSelectors';
@@ -44,11 +47,37 @@ export const SheetServerComponent = React.memo(
       if (userName.length < 1) {
         dispatch(setAlertUserName(true));
       } else {
+        try {
+          if (server?.address) {
+            const [host, portRaw] = server.address.split(':');
+            const port = Number(portRaw || 7777);
+            const settingsPath = FilePath.getPathDirSetting();
+            const settings = await RNFS.readFile(settingsPath, 'utf8');
+            const parsedSettings = parseINIString(settings) as any;
+
+            const nextSettings = {
+              ...parsedSettings,
+              client: {
+                ...parsedSettings.client,
+                host,
+                port,
+                server: server.id,
+              },
+            };
+
+            await RNFS.writeFile(
+              settingsPath,
+              stringifyIni(nextSettings),
+              'utf8',
+            );
+          }
+        } catch (error) {}
+
         await GtaSetupModule.startGame();
       }
 
       dismissAll();
-    }, [userName]);
+    }, [dispatch, server, userName]);
 
     return (
       <DetachedContent
