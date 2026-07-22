@@ -9,7 +9,7 @@ export const appRegisterDeviceForRemoteMessages = (): AppThunk => async () => {
 
   return await notifee.createChannel({
     id: PACKAGE_NAME + '-default',
-    name: PROJECT_NAME + ' Chanel',
+    name: PROJECT_NAME + ' Channel',
     importance: AndroidImportance.HIGH,
   });
 };
@@ -19,7 +19,7 @@ export const createPushNotificationLoader = (): AppThunk => async dispatch => {
 
   return await notifee.createChannel({
     id: PACKAGE_NAME + '-notification',
-    name: PROJECT_NAME + ' Chanel',
+    name: PROJECT_NAME + ' Channel',
   });
 };
 
@@ -29,8 +29,8 @@ export const onUploadTaskEventLoader =
     if (event.status === 'download') {
       await notifee.displayNotification({
         id: PACKAGE_NAME + '-notification',
-        body: `${event.file} [${event.sizeFile} из ${event.currentFile}]`,
-        title: 'Загрузка файлов игры...',
+        body: `${event.file} [${event.sizeFile} of ${event.currentFile}]`,
+        title: 'Downloading game files...',
         android: {
           channelId: PACKAGE_NAME + '-notification',
           ongoing: true,
@@ -49,7 +49,7 @@ export const onUploadTaskEventLoader =
       await notifee.displayNotification({
         id: PACKAGE_NAME + '-notification',
         body: ' ',
-        title: 'Загрузка файлов завершена',
+        title: 'Game files downloaded',
         android: {
           channelId: PACKAGE_NAME + '-notification',
           ongoing: true,

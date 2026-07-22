@@ -93,7 +93,7 @@ public class Dialog {
         }
         else if(dialogTypeId == 1 || dialogTypeId == 3)
         {
-            this.mInputLayout.setVisibility(View.VISIBLE); // выполняется инпут
+            this.mInputLayout.setVisibility(View.VISIBLE); // input is active
             this.mMsgBoxLayout.setVisibility(View.VISIBLE);
             this.mListLayout.setVisibility(View.GONE);
         }

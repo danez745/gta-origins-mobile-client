@@ -20,17 +20,17 @@ export const Cards = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Новости проекта</Text>
+        <Text style={styles.title}>Project news</Text>
       </View>
       <View style={styles.content}>
         {!countArticles && (
           <CardItem
             {...{
-              title: 'Не удалось загрузить новости',
+              title: 'Failed to load news',
               image: '',
               slug: '',
               description: '',
-              created_at: 'Проблемы с интернет подключением',
+              created_at: 'Internet connection issues',
             }}
           />
         )}
