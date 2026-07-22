@@ -4,6 +4,8 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">#000000</item>
+        <item name="android:colorBackground">#000000</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="colorAccent">#ff0000ee</item>
         <item name="windowActionBar">false</item>

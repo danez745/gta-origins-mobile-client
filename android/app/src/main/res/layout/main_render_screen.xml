@@ -3,12 +3,14 @@
     android:id="@+id/main_fl_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="bottom">
+    android:layout_gravity="bottom"
+    android:background="#000000">
 
     <SurfaceView
         android:id="@+id/main_sv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="#000000" />
 
     <FrameLayout
         android:id="@+id/ui_layout"
