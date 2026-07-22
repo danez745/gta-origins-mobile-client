@@ -20,7 +20,11 @@ public class MainGTA extends WarMedia {
         try {
             vmVersion = System.getProperty("java.vm.version");
             System.out.println("vmVersion " + vmVersion);
-            System.loadLibrary("ImmEmulatorJ");
+            if (BuildConfig.LOAD_IMM_EMULATOR) {
+                System.loadLibrary("ImmEmulatorJ");
+            } else {
+                System.out.println("Skipping ImmEmulatorJ load");
+            }
         } catch (ExceptionInInitializerError | UnsatisfiedLinkError ignored) {
         }
 
