@@ -26,7 +26,7 @@ type SheetServerProps = {
   bottomInset?: number;
 };
 
-const AnimsList = {
+const AnimsList: Record<number, any> = {
   1: Anims.Rocket,
   2: Anims.Rocket,
   3: Anims.Rocket,
@@ -47,31 +47,54 @@ export const SheetServerComponent = React.memo(
       if (userName.length < 1) {
         dispatch(setAlertUserName(true));
       } else {
-        try {
-          if (server?.address) {
-            const [host, portRaw] = server.address.split(':');
-            const port = Number(portRaw || 7777);
-            const settingsPath = FilePath.getPathDirSetting();
+        if (server?.address) {
+          const [host, portRaw] = server.address.split(':');
+          const port = Number(portRaw || 7777);
+          const settingsPath = FilePath.getPathDirSetting();
+          let parsedSettings = {} as any;
+
+          try {
             const settings = await RNFS.readFile(settingsPath, 'utf8');
-            const parsedSettings = parseINIString(settings) as any;
+            parsedSettings = parseINIString(settings) as any;
+          } catch (error) {}
 
-            const nextSettings = {
-              ...parsedSettings,
-              client: {
-                ...parsedSettings.client,
-                host,
-                port,
-                server: server.id,
-              },
-            };
+          const nextSettings = {
+            gui: {
+              Font: 'arial_bold.ttf',
+              FontSize: '30.000000',
+              FontOutline: 2,
+              ChatPosX: '319.000000',
+              ChatPosY: '44.000000',
+              ChatSizeX: '1150.000000',
+              ChatSizeY: '220.000000',
+              ChatMaxMessages: 5,
+              HealthBarWidth: '60.000000',
+              HealthBarHeight: '10.000000',
+              MicrophoneSize: '150.000000',
+              MicrophoneX: '1411.000000',
+              MicrophoneY: '364.000000',
+              fps: 60,
+              cutout: false,
+              androidKeyboard: 1,
+              ...parsedSettings.gui,
+            },
+            ...parsedSettings,
+            client: {
+              ...parsedSettings.client,
+              name: userName,
+              host,
+              port,
+              server: server.id,
+              autolock: true,
+            },
+          };
 
-            await RNFS.writeFile(
-              settingsPath,
-              stringifyIni(nextSettings),
-              'utf8',
-            );
-          }
-        } catch (error) {}
+          await RNFS.writeFile(
+            settingsPath,
+            stringifyIni(nextSettings),
+            'utf8',
+          );
+        }
 
         await GtaSetupModule.startGame();
       }
