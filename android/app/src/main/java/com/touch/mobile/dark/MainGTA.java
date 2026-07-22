@@ -3,7 +3,10 @@ package com.touch.mobile.dark;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.KeyEvent;
+import android.widget.Toast;
 
 import com.wardrumstudios.utils.WarMedia;
 
@@ -13,6 +16,8 @@ public class MainGTA extends WarMedia {
     public static MainGTA self = null;
     static String vmVersion;
     private boolean once = false;
+    private static boolean nativeLibrariesLoaded = true;
+    private static String nativeLoadError = null;
 
     static {
         vmVersion = null;
@@ -25,11 +30,14 @@ public class MainGTA extends WarMedia {
             } else {
                 System.out.println("Skipping ImmEmulatorJ load");
             }
-        } catch (ExceptionInInitializerError | UnsatisfiedLinkError ignored) {
+            System.loadLibrary("GTASA");
+            System.loadLibrary("samp");
+            nativeLibrariesLoaded = true;
+        } catch (Throwable t) {
+            nativeLibrariesLoaded = false;
+            nativeLoadError = t.getClass().getSimpleName() + ": " + t.getMessage();
+            System.out.println("Native library load failed: " + nativeLoadError);
         }
-
-        System.loadLibrary("GTASA");
-        System.loadLibrary("samp");
     }
 
     public boolean ServiceAppCommand(String str, String str2) {
@@ -56,6 +64,13 @@ public class MainGTA extends WarMedia {
         self = this;
         wantsMultitouch = true;
         wantsAccelerometer = true;
+        if (!nativeLibrariesLoaded) {
+            String message = nativeLoadError != null ? nativeLoadError : "Native libraries failed to load";
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(() -> Toast.makeText(MainGTA.this, message, Toast.LENGTH_LONG).show());
+            finish();
+            return;
+        }
         super.onCreate(bundle);
         Utils.currentContext = this;
     }
