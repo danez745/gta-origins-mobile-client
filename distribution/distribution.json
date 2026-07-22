@@ -3956,10 +3956,10 @@
   ],
   "projectName": "Touch Mobile",
   "packageName": "com.touch.mobile.dark",
-  "versionHash": "1784685041",
+  "versionHash": "1784685916",
   "rss": "https://touch-rp.com/api/launcer/news",
   "cdnCache": "",
-  "cdnLauncher": "https://github.com/danez745/gta-origins-mobile-client/releases/download/ui-english-e53e73e",
+  "cdnLauncher": "https://github.com/danez745/gta-origins-mobile-client/releases/download/cache-drive-b774c0b",
   "filesContinue": [
     "settings.ini",
     "gta_sa.set",
@@ -3967,10 +3967,10 @@
   ],
   "launcher": {
     "appVersion": "0.0.16",
-    "name": "gta-origins-ui-english-release.apk",
-    "hash": "63a0acc1993d671038b6f2a11cd6a2b6",
-    "mtime": 1784685041,
-    "bytes": 26734995
+    "name": "gta-origins-cache-drive-release.apk",
+    "hash": "6cdfc467e70bc752ca6a99d9e82b4344",
+    "mtime": 1784685916,
+    "bytes": 26735086
   },
   "servers": [
     {

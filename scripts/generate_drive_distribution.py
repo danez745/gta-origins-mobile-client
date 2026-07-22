@@ -15,7 +15,8 @@ from typing import Any
 
 ROOT_STANDARD = "1Tk6Uhtf96_z_MwqyvJts7CXNxCr14AT3"
 ROOT_SNOW = "1J7O73eX8xzfMaD8AXMuXS9xodyjWB24G"
-OWNER_REPO_RAW_BRANCH = "https://raw.githubusercontent.com/danez745/gta-origins-mobile-client/GTA-2.11"
+RELEASE_TAG = "cache-drive-b774c0b"
+LAUNCHER_ASSET_NAME = "gta-origins-cache-drive-release.apk"
 OUTPUT = pathlib.Path("distribution/distribution.json")
 APK_PATH = pathlib.Path("android/app/build/outputs/apk/release/app-release.apk")
 APP_VERSION = "0.0.16"
@@ -173,7 +174,7 @@ def main() -> None:
         raise RuntimeError(f"Snow files missing in standard cache: {missing[:10]}")
 
     cache, cache_mode = make_cache(standard, snow)
-    launcher_name = "gta-origins-ui-english-release.apk"
+    launcher_name = LAUNCHER_ASSET_NAME
     launcher_bytes = APK_PATH.stat().st_size if APK_PATH.exists() else 0
     launcher_hash = md5_file(APK_PATH) if APK_PATH.exists() else ""
 
@@ -185,7 +186,7 @@ def main() -> None:
         "versionHash": str(int(time.time())),
         "rss": "https://touch-rp.com/api/launcer/news",
         "cdnCache": "",
-        "cdnLauncher": "https://github.com/danez745/gta-origins-mobile-client/releases/download/ui-english-e53e73e",
+        "cdnLauncher": f"https://github.com/danez745/gta-origins-mobile-client/releases/download/{RELEASE_TAG}",
         "filesContinue": ["settings.ini", "gta_sa.set", "svconfig.ini"],
         "launcher": {
             "appVersion": APP_VERSION,
