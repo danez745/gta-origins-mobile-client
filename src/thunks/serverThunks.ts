@@ -7,9 +7,10 @@ export const fetchServers = (): AppThunk => async (dispatch, state) => {
 
   if (servers.length > 0) {
     for (const server of servers) {
-      const ip = server.address.split(':')[0];
       try {
-        const { players, maxplayers } = await ServerService.getOnline(ip);
+        const { players, maxplayers } = await ServerService.getOnline(
+          server.address,
+        );
         dispatch(
           setServers({
             ...server,

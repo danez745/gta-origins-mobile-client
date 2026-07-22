@@ -3956,7 +3956,7 @@
   ],
   "projectName": "Touch Mobile",
   "packageName": "com.touch.mobile.dark",
-  "versionHash": "1784685916",
+  "versionHash": "1784687722",
   "rss": "https://touch-rp.com/api/launcer/news",
   "cdnCache": "",
   "cdnLauncher": "https://github.com/danez745/gta-origins-mobile-client/releases/download/cache-drive-b774c0b",
@@ -3969,7 +3969,7 @@
     "appVersion": "0.0.16",
     "name": "gta-origins-cache-drive-release.apk",
     "hash": "6cdfc467e70bc752ca6a99d9e82b4344",
-    "mtime": 1784685916,
+    "mtime": 1784687722,
     "bytes": 26735086
   },
   "servers": [
@@ -3980,19 +3980,19 @@
       "icon": "https://game.touch-rp.com/mobile/image/pro_icon.jpeg",
       "events": [
         {
-          "title": "2x event",
+          "title": "Roleplay",
           "style": "red"
         },
         {
-          "title": "Containers",
+          "title": "Indonesia",
           "style": "blue"
         }
       ],
-      "slot": 100,
+      "slot": 50,
       "bonus": true,
-      "name": "PRO - Server",
-      "description": "SA-MP Mobile",
-      "address": "176.32.39.214:7777",
+      "name": "GTA: Origins",
+      "description": "English/Indonesia Roleplay",
+      "address": "208.76.40.98:7778",
       "sampVersion": "0.3.7"
     }
   ]

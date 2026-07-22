@@ -170,19 +170,19 @@ return new Promise(async () => {
 						icon: 'https://game.touch-rp.com/mobile/image/pro_icon.jpeg',
 						events: [
 							{
-								title: '2x event',
+								title: 'Roleplay',
 								style: 'red',
 							},
 							{
-								title: 'Containers',
+								title: 'Indonesia',
 								style: 'blue',
 							},
 						],
-						slot: 100,
+						slot: 50,
 						bonus: true,
-						name: 'PRO - Server',
-						description: 'SA-MP Mobile',
-						address: '176.32.39.214:7777',
+						name: 'GTA: Origins',
+						description: 'English/Indonesia Roleplay',
+						address: '208.76.40.98:7778',
 						sampVersion: '0.3.7',
 					},
 					{
@@ -192,18 +192,18 @@ return new Promise(async () => {
 						icon: 'https://game.touch-rp.com/mobile/image/pro_icon.jpeg',
 						events: [
 							{
-								title: '2x event',
+								title: 'Roleplay',
 								style: 'red',
 							},
 							{
-								title: 'Containers',
+								title: 'Indonesia',
 								style: 'blue',
 							},
 						],
 						slot: 1000,
 						bonus: false,
 						name: 'Localhost',
-						description: 'SA-MP Mobile',
+						description: 'English/Indonesia Roleplay',
 						address: '127.0.0.1:7777',
 						sampVersion: '0.3.7',
 					},
